@@ -1,6 +1,7 @@
 import socket
 import mysql.connector
 import json
+from fuzzywuzzy import fuzz
 
 BUFFER_SIZE = 1024
 
@@ -51,6 +52,11 @@ def handle_question(conn):
 
     conn.send(bytes(json.dumps(responseObj), "utf8"))
     conn.close()
+
+def match_words(word1, word2):
+    prc = fuzz.ratio(word1, word2)
+    match_procent = prc / 100
+    return match_procent
 
 while True:
     listen_ip = "0.0.0.0" #'192.168.1.135'
