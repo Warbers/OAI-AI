@@ -1,5 +1,5 @@
 #Visual studio suff
-.vs/
+.vs*
 
 #Hides the config
 dataconfig.json
