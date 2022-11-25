@@ -1,6 +1,7 @@
 import socket
 import mysql.connector
 import json
+import math
 from fuzzywuzzy import fuzz
 
 BUFFER_SIZE = 1024
@@ -54,9 +55,18 @@ def handle_question(conn):
     conn.close()
 
 def match_words(word1, word2):
-    prc = fuzz.ratio(word1, word2)
-    match_procent = prc / 100
+    percent = fuzz.ratio(word1, word2)
+    match_percent = prc / 100
     return match_procent
+
+def calculate_weight_line(weight, match_percent):
+    return weight * (2 * match_percent-1)
+
+def calculate_weight_aggressive(weight, match_percent):
+    return weight * (math.pow((match_percent-0.5),2) * 2 + 0.5)
+
+def calculate_weight_defensive(weight, match_percent):
+    return weight * (math.sqrt((match_percent-0.5)/2)+0.5)
 
 while True:
     listen_ip = "0.0.0.0" #'192.168.1.135'
