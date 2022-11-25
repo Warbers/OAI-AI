@@ -35,15 +35,15 @@ def get_answer_from_question(question):
     mycursor.close()
     return answer_result
 
-def HandleQuestion(conn):
+def handle_question(conn):
     data = conn.recv(BUFFER_SIZE)
     question = json.loads(data)["question"]
 
-    answerId, answerType, text, state, weight = get_answer_from_question(question)
+    answer_id, answer_type, text, state, weight = get_answer_from_question(question)
 
     responseObj = {
-        "AnswerId": answerId,
-        "AnswerType": answerType,
+        "AnswerId": answer_id,
+        "AnswerType": answer_type,
         "AnswerValue": text,
         "Status": state,
         "weight": weight
@@ -64,4 +64,4 @@ while True:
     sockval = s.accept()
     conn, addr = sockval
     print('Connection address:', addr)
-    HandleQuestion(conn)
+    handle_question(conn)
