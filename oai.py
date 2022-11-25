@@ -1,17 +1,11 @@
-import sys
 import socket
-from threading import Thread
 import mysql.connector
 import json
 
-TCP_IP = "0.0.0.0" #'192.168.1.135'
-TCP_PORT = 8888
 BUFFER_SIZE = 1024
-param = []
-i=0
 
 with open("dataconfig.json") as conf:
-    config = json.loads(conf.read())
+    config = json.load(conf)
 
 mydb = mysql.connector.connect(**config)
 
@@ -59,8 +53,11 @@ def HandleQuestion(conn):
     conn.close()
 
 while True:
+    listen_ip = "0.0.0.0" #'192.168.1.135'
+    listen_port = 8888
+
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.bind((TCP_IP, TCP_PORT))
+    s.bind((listen_ip, listen_port))
     s.listen(1)
 
     print('Listening for client...')
