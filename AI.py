@@ -15,14 +15,12 @@ class ai:
         self.reset_answer()
         
         question = re.sub('[^a-zA-Z0-9 ]', '', question)
-        words = question.split()
+        words = question.lower().split()
 
         for stop_word in self.stop_words:
             if stop_word in words: words.remove(stop_word)
 
         words = list(dict.fromkeys(words))
-
-        words =     [x.lower() for x in words]
 
         for word in words:
             keywords.append(self.process_word(word))
