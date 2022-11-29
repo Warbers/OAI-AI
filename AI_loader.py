@@ -1,7 +1,6 @@
 import mysql.connector
 import json
 
-
 def load_model():
     with open("dataconfig.json") as conf:
         config = json.load(conf)
@@ -30,3 +29,11 @@ def load_stop_words():
     stop_words = stop_words_file.read().splitlines()
 
     return stop_words
+
+if __name__ == "__main__":
+    model = load_model()
+
+    print(model)
+
+    with open("model.json", "w") as model_file:
+        json.dump(model, model_file, indent=4)
