@@ -1,5 +1,6 @@
 #Visual studio suff
 .vs*
+__pycache__*
 
 #Hides the config
 dataconfig.json
