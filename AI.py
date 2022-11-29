@@ -77,21 +77,24 @@ class ai:
     def calculate_weight_defensive(self, weight, match_percent):
         return weight * (math.sqrt((match_percent-0.7)/(10/3) )+0.7)
 
-#inp = ""
+if __name__ == "__main__":
+    from AI_loader import load_model, load_stop_words
+    import time
 
-#model = load_model()
+    model = load_model()
 
-#stop_words = load_stop_words()
+    stop_words = load_stop_words()
 
-#test_ai = ai(model, stop_words)
+    test_ai = ai(model, stop_words)
+    
+    inp = ""
+    while(inp != "exit"):
 
-#while(inp != "exit"):
+        inp = input()
 
-#    inp = input()
+        start = time.time()
+        answer = test_ai.get_answer(inp)
+        end = time.time()
 
-#    start = time()
-#    answer = test_ai.get_answer(inp)
-#    end = time()
-
-#    answer.print()
-#    print(end-start)
+        answer.print()
+        print(end-start)
