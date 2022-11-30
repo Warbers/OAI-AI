@@ -5,7 +5,7 @@ from fuzzywuzzy import fuzz
 class ai:
     def __init__(self, model, stop_words):
        self.model = model
-       self.stop_words = stop_words
+       self.stop_words = []
        self.answers = {}
 
     classmethod
@@ -25,12 +25,14 @@ class ai:
         for word in words:
             keywords.append(self.process_word(word))
         
-        highest = max(self.answers, key=self.answers.get);
-        
+        highest = max(self.answers, key=self.answers.get)
+        total   = sum(self.answers.values())
+        confidence = self.answers[highest] / total
+         
         for answer in self.model["answers"]:
             if answer["id"] == highest:
                 answer["keywords"] = keywords
-                return answer
+                return answer, confidence
     
     classmethod
     def process_word(self, word):
@@ -54,6 +56,20 @@ class ai:
             return good_keyword
         else:
             return word
+
+    DEFAULT_WEIGHT_CHANGE = 0.01
+    def answer_feedback(self, answer_id, answer_good):
+        if answer_good:
+            move_weights_by = self.DEFAULT_WEIGHT_CHANGE
+        else:
+            move_weights_by = -self.DEFAULT_WEIGHT_CHANGE
+        for weight in self.model["edges"]:
+            if weight["answer_id"] == answer_id:
+                x = weight["weight"]
+                x = max(0, min(x, 1))
+                # -x ** 2 + x makes a parabole from 0 to 1
+                scale_weight = -x ** 2 + x
+                weight["weight"] += move_weights_by * scale_weight
     
     def reset_answer(self):
         self.answers = {}
@@ -79,6 +95,36 @@ class ai:
 
 
 if __name__ == "__main__":
+    locations = [
+        "b14",
+        "b16",
+        "kantine",
+        "kontor",
+        "toilet"
+    ]
+    location_sentences = [
+        "hvor er {}",
+        "hvor kan jeg finde {}",
+        "hvad er lokationen på {}",
+        "hvor finder jeg {}",
+        "hvor {}",
+    ]
+    misc_questions = [
+        "hvordan søger jeg su",
+        "hvor kan jeg søge su",
+        "hvad kan jeg få i su",
+        "hvad er su",
+        "hvad er et su lån",
+        "hvornår skal man betale su lån tilbage",
+        "skal man betale su lån tilbage",
+        "hvordan overlever man på 3000 om måneden",
+        "hvad er der til frokost",
+        "hvad er madplanen",
+        "hvordan ser madplanen ud",
+        "hvorfor laver kantinen madden så klamt",
+        "hvordan overlever man på klam skolekantine mad",
+        "hvor er McDonald's"
+    ]
     import time
     from AI_loader import *
 
@@ -88,14 +134,31 @@ if __name__ == "__main__":
 
     test_ai = ai(model, stop_words)
 
-    inp = ""
-    while(inp != "exit"):
-        inp = input()
+    for sentence in location_sentences:
+        for loc in locations:
+            question = sentence.format(loc)
+            answer, confidence = test_ai.get_answer(question)
+            print(question)
+            print(answer)
+            print(confidence)
+            print(test_ai.answers)
+            feedback = answer["text"] == loc
+            test_ai.answer_feedback(answer["id"], feedback)
+
+    while True:
+        inp = input("spørgsmål: ")
+        if inp == "exit":
+            break
 
         start = time.time()
-        answer = test_ai.get_answer(inp)
+        answer, confidence = test_ai.get_answer(inp)
         end = time.time()
 
         print(answer)
+        print(confidence)
         benchmark_time_ms = (end - start) * 1000
         print(f"{benchmark_time_ms}ms")
+        print(test_ai.answers)
+        feedback = input("feedback [y/n]: ") == "y"
+        test_ai.answer_feedback(answer["id"], feedback)
+
