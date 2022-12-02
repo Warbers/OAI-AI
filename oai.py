@@ -11,7 +11,7 @@ def handle_question(conn, oai):
 
     print(question)
 
-    answer = oai.get_answer(question)
+    answer, confidence = oai.get_answer(question)
     
     jsonResponse = json.dumps(answer)
 
