@@ -8,23 +8,30 @@ class ai:
        self.stop_words = []
        self.answers = {}
 
+    # get an answer from a question
     classmethod
     def get_answer(self, question):
         keywords = []
 
         self.reset_answer()
         
+        # clean the string and split on whitespace
         question = re.sub('[^a-zA-Z0-9 ]', '', question)
         words = question.lower().split()
 
+        # remove common words (stop words)
         for stop_word in self.stop_words:
             if stop_word in words: words.remove(stop_word)
 
+        # remove duplicate words
         words = list(dict.fromkeys(words))
 
+        # process each word
         for word in words:
             keywords.append(self.process_word(word))
         
+        # calculate the highest probability answer
+        # and calculate the confidence
         highest = max(self.answers, key=self.answers.get)
         total   = sum(self.answers.values())
         confidence = self.answers[highest] / total
@@ -33,26 +40,37 @@ class ai:
             if answer["id"] == highest:
                 answer["keywords"] = keywords
                 return answer, confidence
+        
+        # TODO: Should throw?
     
+    # This value is purely based in trial and error
+    MATCH_THRESHOLD = 0.7
+
     classmethod
     def process_word(self, word):
         good_keyword = ""
         best_match_precent = 0
 
         for keyword in self.model["keywords"]:
+            # try to match the word
             match_precent = self.match_words(word, keyword["word"])
 
+            # if the word matches better than previous...
             if match_precent > best_match_precent:
                 good_keyword = keyword["word"]
                 best_match_precent = match_precent
 
-            if match_precent >= 0.7:
+            # TODO: should this be outside the for-loop since it will run if later matches also reach 0.7
+            # example: [0.7,0.8,0.9,1.0] will all make the weight go up
+            if match_precent >= self.MATCH_THRESHOLD:
                 for answer in self.model["edges"]:
                     if(answer["keyword_id"] == keyword["id"]):
+                        # add value based on the match_percent and an "activation function"
                         weight = self.calculate_weight_defensive(answer["weight"], match_precent)
                         self.answers[answer["answer_id"]] += weight
 
-        if best_match_precent >= 0.7:
+        # if the word reached our match threshold
+        if best_match_precent >= self.MATCH_THRESHOLD:
             return good_keyword
         else:
             return word
@@ -67,7 +85,7 @@ class ai:
             if weight["answer_id"] == answer_id:
                 x = weight["weight"]
                 x = max(0, min(x, 1))
-                # -x ** 2 + x makes a parabole from 0 to 1
+                # -x^2 + x makes a parabola from 0 to 1
                 scale_weight = -x ** 2 + x
                 weight["weight"] += move_weights_by * scale_weight
     
@@ -161,4 +179,3 @@ if __name__ == "__main__":
         print(test_ai.answers)
         feedback = input("feedback [y/n]: ") == "y"
         test_ai.answer_feedback(answer["id"], feedback)
-
