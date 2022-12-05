@@ -35,7 +35,10 @@ class ai:
         # and calculate the confidence
         highest = max(self.answers, key=self.answers.get)
         total   = sum(self.answers.values())
-        confidence = self.answers[highest] / total
+        if total != 0:
+            confidence = self.answers[highest] / total
+        else:
+            confidence = 0
          
         for answer in self.model["answers"]:
             if answer["id"] == highest:
