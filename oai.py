@@ -11,8 +11,8 @@ def handle_question(conn, oai):
 
     print(question)
 
-    answer, confidence = oai.get_answer(question)
-    
+    answer, confidence, question_id = oai.get_answer(question)
+    answer["question_id"] = question_id
     jsonResponse = json.dumps(answer)
 
     conn.send(bytes(jsonResponse, "utf8"))
