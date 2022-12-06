@@ -7,16 +7,20 @@ BUFFER_SIZE = 1024
 
 def handle_question(conn, oai):
     data = conn.recv(BUFFER_SIZE)
-    question = json.loads(data)["question"]
+    request = json.loads(data)
+    if "question_id" in request:
+        oai.answer_feedback(request["question_id"], request["feedback"])
+        conn.close()
+    else:
+        question = request["question"]
+        print(question)
 
-    print(question)
+        answer, confidence, question_id = oai.get_answer(question)
+        #answer["question_id"] = question_id
+        jsonResponse = json.dumps(answer)
 
-    answer, confidence, question_id = oai.get_answer(question)
-    answer["question_id"] = question_id
-    jsonResponse = json.dumps(answer)
-
-    conn.send(bytes(jsonResponse, "utf8"))
-    conn.close()
+        conn.send(bytes(jsonResponse, "utf8"))
+        conn.close()
 
 
 if __name__ == "__main__":
