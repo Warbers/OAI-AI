@@ -1,7 +1,7 @@
 import socket
 import json
-from AI import ai
-from AI_loader import load_stop_words, load_model
+from ai import ai
+from ai_loader import load_stop_words, load_model
 
 BUFFER_SIZE = 1024
 

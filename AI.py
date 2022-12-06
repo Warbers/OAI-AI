@@ -167,7 +167,7 @@ if __name__ == "__main__":
         "hvor er McDonald's"
     ]
     import time
-    from AI_loader import *
+    from ai_loader import *
 
     model = load_model()
 

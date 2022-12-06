@@ -8,8 +8,8 @@ Type=Simple
 Restart=Always
 RestartSec=1
 User=ai
-WorkingDirectory=/home/ai/Desktop
-ExecStart=/usr/bin/python /home/ai/Desktop/aiserver.py
+WorkingDirectory=/home/ai/OAI-AI
+ExecStart=/usr/bin/python /home/ai/OAI-AI/oai.py
 
 [Install]
 WantedBy=multi-user.target
