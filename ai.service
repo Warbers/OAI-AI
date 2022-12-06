@@ -1,0 +1,15 @@
+[Unit]
+Description=Overlord ai server
+After=network.target
+StartLimitInterval=0
+
+[Service]
+Type=Simple
+Restart=Always
+RestartSec=1
+User=ai
+WorkingDirectory=/home/ai/Desktop
+ExecStart=/usr/bin/python /home/ai/Desktop/aiserver.py
+
+[Install]
+WantedBy=multi-user.target
