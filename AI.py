@@ -128,7 +128,7 @@ class ai:
         return weight * match_percent
 
     def calculate_weight_line(self, weight, match_percent):
-        return weight * (3 * match_percent-2)
+        return weight * (match_percent - 0.7) / 0.3
 
     def calculate_weight_aggressive(self, weight, match_percent):
         return weight * (math.pow((match_percent-0.7),2) * (10/3) + 0.7)
