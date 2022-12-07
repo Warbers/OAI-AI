@@ -5,7 +5,7 @@ from fuzzywuzzy import fuzz
 class ai:
     def __init__(self, model, stop_words):
        self.model = model
-       self.stop_words = []
+       self.stop_words = stop_words
        self.answers = {}
        self.previous_questions = []
 
